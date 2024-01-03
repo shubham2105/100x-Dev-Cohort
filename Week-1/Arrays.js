@@ -62,3 +62,36 @@ console.log(
 
 let exampleArray = ["My", "name", "is", "khan"];
 console.log(exampleArray.reverse()); // using reverse method
+
+// exploring the array methods
+
+const persons = [
+  {
+    firstname: "John",
+    lastname: "Reynlods",
+  },
+  {
+    firstname: "Kaylee",
+    lastname: "Frye",
+  },
+  {
+    firstname: "Jayne",
+    lastname: "Cobb",
+  },
+];
+
+persons.map(getFullName);
+
+function getFullName(item) {
+  return [item.firstname, item.lastname].join(" ");
+}
+console.log(getFullName(persons));
+
+// another example of array.map() method
+
+const numbers = [4, 9, 16, 25];
+const newArr = numbers.map(myFn);
+
+function myFn(n1) {
+  return n1 * 10;
+}
