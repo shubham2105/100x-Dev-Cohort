@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<script>
+    // debouncing 
+    function debounceInput(func, delay) {
+        let timerId;
+        return function () {
+            clearTimeout(timerId);
+            timerId = setTimeout(() => func.apply(this, arguments), delay);
+        }
+    }
+    // throttling
+    function throttleInput(func, limit) {
+        let lastFunc;
+        let lastRan;
+        return function () {
+            const context = this;
+            const args = arguments;
+            if (!lastRan) {
+                func.apply(context, args);
+                lastRan = Date.now();
+            } else {
+                clearTimeout(lastFunc);
+                lastFunc = setTimeout(function () {
+                    if ((Date.now() - lastRan) >= limit) {
+                        func.apply(this, arguments);
+                        lastRan = Date.now();
+                    }
+                }, limit - ((Date.now() - lastRan))
+                )
+            }
+        }
+    }
+    // calculating simpleInterest using backend call
+    async function getSimpleInterest() {
+        const principal = parseInt(document.getElementById("principal").value);
+        const rate = parseInt(document.getElementById("rate").value);
+        const time = parseInt(document.getElementById("time").value);
+
+        const result = await fetch("http://localhost:3001/interest?principal=" + principal + "&rate=" + rate + "&time=" + time);
+        const ans = await result.text();
+        document.getElementById("getSimpleInterest").innerHTML = "Your Simple Interest is:" + ans;
+    }
+    // debouncing 
+    const debouncedSimpleInterest = debounceInput(getSimpleInterest, 1000);
+    // throtolling
+    const throttledSimpleInterest = throttleInput(getSimpleInterest, 2000);
+</script>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Interest Calculator</title>
+</head>
+
+<body>
+    <center>
+        <h1>Simple Interest Calculator</h1>
+        <input oninput="throttledSimpleInterest()" id="principal" type="number"
+            placeholder="Enter principal amount"><br><br>
+        <input oninput="throttledSimpleInterest()" id="rate" type="number" placeholder="Enter Rate of Interest"><br><br>
+        <input oninput="throttledSimpleInterest()" id="time" type="number" placeholder="Enter Duration"><br><br>
+        <div id="getSimpleInterest">Your Simple Interest is: </div>
+    </center>
+</body>
+
+</html>

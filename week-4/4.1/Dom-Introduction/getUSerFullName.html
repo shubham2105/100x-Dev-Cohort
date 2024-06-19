@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<script>
+    function getFullName() {
+        const fname = document.getElementById("fname").value;
+        const lname = document.getElementById("lname").value;
+        const fullName = `FullName of user is : ${fname} ${lname}`;
+        document.getElementById("displayFullName").innerHTML = fullName;
+    }
+</script>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get User full Name</title>
+</head>
+
+<body>
+    <input id="fname" oninput="getFullName()" type="text" placeholder="Enter your firstname"><br><br>
+    <input id="lname" oninput="getFullName()" type="text" placeholder="Enter your lastname"><br><br>
+    <!-- <button onclick="getFullName()">Get FullName</button><br><br> -->
+    <div id="displayFullName"></div>
+</body>
+
+</html>

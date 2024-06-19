@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <p>Demo for queryselector and queryselectors</p>
+    <p>This is a demo line</p>
+    <div class="intro">This is demo div-1</div>
+    <div>This is demo div-2</div>
+
+    <script>
+        var divs = document.querySelectorAll('div.intro');
+        divs.forEach(divs => divs.style.backgroundColor = 'blue')
+    </script>
+</body>
+
+</html>

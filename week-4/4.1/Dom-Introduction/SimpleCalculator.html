@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<script>
+    function populateDiv() {
+        const n1 = parseFloat(document.getElementById("num1").value);
+        const n2 = parseFloat(document.getElementById("num2").value);
+        const sum = n1 + n2;
+        const result = document.getElementById("FinalSum").innerHTML = 'Sum is ' + sum;
+    }
+</script>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator</title>
+</head>
+
+<body>
+    <input id="num1" type="number" placeholder="Enter 1st Number"><br><br>
+    <input id="num2" type="number" placeholder="Enter 2nd Number"><br><br>
+    <button onclick="populateDiv()">Get Sum</button>
+    <div id="FinalSum"></div>
+</body>
+
+</html>
