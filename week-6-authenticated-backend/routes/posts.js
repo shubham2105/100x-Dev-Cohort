@@ -61,7 +61,7 @@ function generatetoken() {
     "y",
     "z",
   ];
-  let token = " ";
+  let token = "";
   for (let i = 0; i < 32; i++) {
     token += options[Math.floor(Math.random() * options.length)];
   }
@@ -104,6 +104,7 @@ postsRouter.post("/signin", (req, res) => {
       });
     }
     const token = generatetoken();
+    user.token = token;
     return res.json({
       message: "Signin successful",
       username,
@@ -113,6 +114,21 @@ postsRouter.post("/signin", (req, res) => {
     console.error("Error during signin:", error);
     return res.status(500).json({
       message: "Internal Server Error",
+    });
+  }
+});
+
+postsRouter.get("/me", (req, res) => {
+  const token = req.headers.authorization;
+  const user = users.find((user) => user.token === token);
+
+  if (user) {
+    res.send({
+      username: user.username,
+    });
+  } else {
+    res.status(404).json({
+      message: "Unauthorized",
     });
   }
 });
