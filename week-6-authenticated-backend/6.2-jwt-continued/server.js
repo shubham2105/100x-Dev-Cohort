@@ -35,6 +35,10 @@ const signinSchema = z.object({
 });
 
 // routes
+
+app.get("/", (req, res) => {
+  res.sendFile(__dirname + "/public/index.html");
+});
 app.post("/signup", (req, res) => {
   const parseResult = signupSchema.safeParse(req.body);
   if (!parseResult.success) {
@@ -47,7 +51,7 @@ app.post("/signup", (req, res) => {
   const newUSer = { username, password };
   users.push(newUSer);
   res.json({
-    message: "signup endpoint",
+    message: "signup endpoint : signed up successfully",
   });
 });
 
