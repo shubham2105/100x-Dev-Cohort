@@ -1,4 +1,7 @@
 const express = require("express");
+// const dotenv = require("dotenv");
+require("dotenv").config();
+const jwt = require("jsonwebtoken");
 const { Router } = require("express");
 const z = require("zod");
 
@@ -32,41 +35,43 @@ const signinSchema = z.object({
 // users array
 const users = [];
 
-function generatetoken() {
-  let options = [
-    "a",
-    "b",
-    "c",
-    "d",
-    "e",
-    "f",
-    "g",
-    "h",
-    "i",
-    "j",
-    "k",
-    "l",
-    "m",
-    "n",
-    "o",
-    "p",
-    "q",
-    "r",
-    "s",
-    "t",
-    "u",
-    "v",
-    "w",
-    "x",
-    "y",
-    "z",
-  ];
-  let token = "";
-  for (let i = 0; i < 32; i++) {
-    token += options[Math.floor(Math.random() * options.length)];
-  }
-  return token;
-}
+// replacing custom gegnerateToken with jwt based token
+
+// function generatetoken() {
+//   let options = [
+//     "a",
+//     "b",
+//     "c",
+//     "d",
+//     "e",
+//     "f",
+//     "g",
+//     "h",
+//     "i",
+//     "j",
+//     "k",
+//     "l",
+//     "m",
+//     "n",
+//     "o",
+//     "p",
+//     "q",
+//     "r",
+//     "s",
+//     "t",
+//     "u",
+//     "v",
+//     "w",
+//     "x",
+//     "y",
+//     "z",
+//   ];
+//   let token = "";
+//   for (let i = 0; i < 32; i++) {
+//     token += options[Math.floor(Math.random() * options.length)];
+//   }
+//   return token;
+// }
 postsRouter.post("/signup", (req, res) => {
   const parseResult = signupSchema.safeParse(req.body);
   if (!parseResult.success) {
@@ -103,12 +108,17 @@ postsRouter.post("/signin", (req, res) => {
         message: "Invalid username or password",
       });
     }
-    const token = generatetoken();
-    user.token = token;
+    const token = jwt.sign(
+      {
+        username: username,
+      },
+      process.env.JWT_SECRET_KEY
+    );
+    // user.token = token;
     return res.json({
       message: "Signin successful",
       username,
-      token,
+      token: token,
     });
   } catch (error) {
     console.error("Error during signin:", error);
@@ -119,12 +129,15 @@ postsRouter.post("/signin", (req, res) => {
 });
 
 postsRouter.get("/me", (req, res) => {
-  const token = req.headers.authorization;
-  const user = users.find((user) => user.token === token);
+  const token = req.headers.token;
+  const decodedInformation = jwt.verify(token, process.env.JWT_SECRET_KEY);
+  const username = decodedInformation.username;
+  const user = users.find((user) => user.username === username);
 
   if (user) {
     res.send({
       username: user.username,
+      password: user.password,
     });
   } else {
     res.status(404).json({
