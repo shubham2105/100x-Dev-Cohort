@@ -2,10 +2,26 @@ const express = require("express");
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
+const { z } = require("zod");
 const { UserModel, TodoModel } = require("./db");
 mongoose.connect(process.env.MONGODB_URL);
 const app = express();
 app.use(express.json());
+
+// zod validations
+
+const signupSchema = z.object({
+  name: z
+    .string()
+    .min(1, "name canoot be empty")
+    .max(100, "name cannot be more than 100 characters"),
+  email: z
+    .string()
+    .min(1, "email id field cannot be empty")
+    .email("enter valid email address")
+    .max(100, "email id cannot be more than 100 characters"),
+});
 
 // middleware;
 function auth(req, res, next) {
@@ -25,27 +41,46 @@ function auth(req, res, next) {
 // routes
 
 app.post("/signup", async (req, res) => {
+  // const parsedData = signupSchema.parse(req.body);
+  const parsedDataWithSucess = signupSchema.safeParse(req.body);
+  if (!parsedDataWithSucess.success) {
+    res.json({
+      errors: parsedDataWithSucess.error.errors,
+    });
+  }
   const { name, email, password } = req.body;
-  await UserModel.create({
-    email: email,
-    password: password,
-    name: name,
-  });
-  res.json({
-    message: "You are now signed up",
-  });
+  try {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    await UserModel.create({
+      email: email,
+      password: hashedPassword,
+      name: name,
+    });
+    res.json({
+      message: "You are now signed up",
+    });
+  } catch (error) {
+    return res.json({
+      message: "User already exists",
+    });
+  }
 });
 
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
-  const user = await UserModel.findOne({
+  const response = await UserModel.findOne({
     email: email,
-    password: password,
   });
-  if (user) {
+  if (!response) {
+    return res.status(403).json({
+      message: "user does not exist",
+    });
+  }
+  const passwordMatch = await bcrypt.compare(password, response.password);
+  if (passwordMatch) {
     const token = jwt.sign(
       {
-        id: user._id,
+        id: response._id,
       },
       process.env.JWT_SECRET_KEY
     );
