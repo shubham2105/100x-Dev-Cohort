@@ -11,7 +11,7 @@ const App = () => {
         alignItems: "center",
       }}
     >
-      <h1>react basics hello </h1>
+      <h1>React basics hello </h1>
       <Counter />
     </div>
   );
